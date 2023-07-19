@@ -2,6 +2,7 @@ from flask import Response, request, Flask, jsonify, make_response
 from flask_cors import CORS
 from translate import translate_video
 import json
+import ssl
 
 
 app = Flask(__name__)
@@ -25,4 +26,6 @@ def translate():
     return jsonify({"translated_word":sentence})
 
 if __name__ == "__main__":
-    app.run(port=8900)
+    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+    ssl_context.load_cert_chain(certfile='cert.pem', keyfile='key.pem', password='louie')
+    app.run(host='0.0.0.0', port=8900, ssl_context=ssl_context)
