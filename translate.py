@@ -1,7 +1,7 @@
 import boto3
 import os
 from dotenv import load_dotenv, find_dotenv
-
+from preprocessing_ray import preprocessing
 
 
 def translate_video(filename="default"):
@@ -14,12 +14,15 @@ def translate_video(filename="default"):
         aws_secret_access_key=os.getenv("S3_ACCESS_SECRET_ACCESS_KEY"),
         region_name=os.getenv("S3_REGION"))
     try:
-        video = s3_client.get_object(
-            Bucket="gyhibo-databucket",
-            Key=filename + ".webm"
-        )
+        s3_client.download_file(
+            "gyhibo-databucket",
+            filename + ".webm",
+            filename + ".webm")
         
         print("VIDEO PROCESSING")
+        # 전처리 파트 시작
+        preprocessing(filename)
+        os.remove(filename + ".webm")
         """
         여기서 모델 활용
         """
@@ -28,4 +31,4 @@ def translate_video(filename="default"):
     return "translated_word"
 
 if __name__ == "__main__":
-    translate_video("83ed2fad-0bdc-4e48-ae89-f676ea5ca540")
+    translate_video("bf2c632e-6641-4ff7-a905-7f8d9a64ea80")
