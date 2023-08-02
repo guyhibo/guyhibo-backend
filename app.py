@@ -7,13 +7,12 @@ import ssl
 
 app = Flask(__name__)
 app.debug = True
-CORS(app)
 
-@app.route('/', methods=['GET'])
+@app.route('/api/', methods=['GET'])
 def main_page():
     return "ONLINE"
 
-@app.route('/translate', methods=['POST'])
+@app.route('/api/translate/', methods=['POST'])
 def translate():
     params = json.loads(request.get_data())
     # print(params)
@@ -26,6 +25,4 @@ def translate():
     return jsonify({"translated_word":sentence})
 
 if __name__ == "__main__":
-    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS)
-    ssl_context.load_cert_chain(certfile='cert.pem', keyfile='key.pem', password='louie')
-    app.run(host='0.0.0.0', port=5000, ssl_context=ssl_context)
+    app.run(host='0.0.0.0', port=5000)
