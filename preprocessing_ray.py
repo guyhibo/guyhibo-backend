@@ -4,7 +4,7 @@ import time, os
 import sys
 import json
 import pandas as pd
-import ray
+# import ray
 from facenet_pytorch import MTCNN
 import torch
 
@@ -59,41 +59,44 @@ def get_lip_data(file_path):
         
     return lip_data
 
-@ray.remote
-def mean_std(videos):
+# @ray.remote
+def mean_std(video):
     frame_count = 0
     mean_values = []
     std_values = []
     mean_average=0
     std_average=0
 
-    for video in videos:
-        cap = cv2.VideoCapture(video)
+    # for video in videos:
+    cap = cv2.VideoCapture(video)
 
-        while cap.isOpened():
-            ret,frame=cap.read()
+    while cap.isOpened():
+        ret,frame=cap.read()
 
-            if not ret:
-                break
+        if not ret:
+            break
 
-            mean,std=cv2.meanStdDev(frame)
-            mean_value=mean.flatten()[0]
-            std_value=std.flatten()[0]
+        mean,std=cv2.meanStdDev(frame)
+        mean_value=mean.flatten()[0]
+        std_value=std.flatten()[0]
 
-            mean_values.append(mean_value)
-            std_values.append(std_value)
+        mean_values.append(mean_value)
+        std_values.append(std_value)
 
-        mean_average += np.mean(mean_values)
-        std_average += np.mean(std_values)
+    mean_average += np.mean(mean_values)
+    std_average += np.mean(std_values)
         
-    mean_final=mean_average/len(videos)
-    std_final=std_average/len(videos)
+    # mean_final=mean_average/len(videos)
+    # std_final=std_average/len(videos)
+    
+    mean_final=mean_average
+    std_final=std_average
 
     return mean_final,std_final
 
 
 
-@ray.remote
+# @ray.remote
 def preprocessing_video(video,mean,std):
     fourcc = cv2.VideoWriter_fourcc(*'mp4v') 
 
@@ -140,19 +143,30 @@ def preprocessing_video(video,mean,std):
     print(f"[Finish {time.time()-start}]: {file_name} ")
 
 def preprocessing(filename):
-    ray.init(num_cpus=12)
+    # ray.init(num_cpus=12)
 
-    # video_list = get_file_list('.webm')
-    video_list = [filename + '.webm']
-    mean_std_results = mean_std.remote(video_list)
-    mean, std = ray.get(mean_std_results)
-    mean=round(mean,3)
-    std=round(std,3)
+    # # video_list = get_file_list('.webm')
+    # video_list = [filename + '.webm']
+    # mean_std_results = mean_std.remote(video_list)
+    # mean, std = ray.get(mean_std_results)
+    # mean=round(mean,3)
+    # std=round(std,3)
     
-    # 멀티프로세싱 작업을 위한 풀 생성
-    ray_results = [preprocessing_video.remote(video, mean,std) for video in video_list]
-    ray.get(ray_results)
-    ray.shutdown()
+    # # 멀티프로세싱 작업을 위한 풀 생성
+    # ray_results = [preprocessing_video.remote(video, mean,std) for video in video_list]
+    # ray.get(ray_results)
+    # ray.shutdown()
+    
+    video_name = filename + '.webm'
+    mean_std_results = mean_std(video_name)
+    mean, std = mean_std_results
+    mean = round(mean, 3)
+    std = round(std, 3)
+    
+    print(mean, std)
+    
+    res = preprocessing_video(video_name, mean, std)
+    print(res)
     
 if __name__ == '__main__':
-    preprocessing("bf2c632e-6641-4ff7-a905-7f8d9a64ea80")
+    preprocessing("11ff405e-6281-42ad-a31a-8e3a51a09a56")
