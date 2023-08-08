@@ -102,6 +102,12 @@ model_transformer.eval()
 model_transformer = model_transformer.to(device)
 # -----------------------------------------------------
 
+def inference(video_path):
+    abs_video_path = "dataset/"+ video_path + "_preprocessed.mp4"
+    print(abs_video_path)
+    result = get_prediction(model_transformer, abs_video_path)
+    return result
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process video path.')
     parser.add_argument('video_path', type=str, help='Path to the video file')

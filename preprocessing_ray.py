@@ -166,7 +166,7 @@ def preprocessing(filename):
     print(mean, std)
     
     res = preprocessing_video(video_name, mean, std)
-    print(res)
+    # print(res)
     
 if __name__ == '__main__':
     preprocessing("11ff405e-6281-42ad-a31a-8e3a51a09a56")

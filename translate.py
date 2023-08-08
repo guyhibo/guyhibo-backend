@@ -2,7 +2,7 @@ import boto3
 import os
 from dotenv import load_dotenv, find_dotenv
 from preprocessing_ray import preprocessing
-
+from inference_lipreading import inference
 
 def translate_video(filename="default"):
     if filename == "default":
@@ -23,12 +23,12 @@ def translate_video(filename="default"):
         # 전처리 파트 시작
         preprocessing(filename)
         os.remove(filename + ".webm")
-        """
-        여기서 모델 활용
-        """
-    except:
-        return "Error"
-    return "translated_word"
+        result = inference(filename)
+    except IndexError:
+        return "얼굴 인식에 실패하였습니다."
+    except :
+        return "ERROR"
+    return result
 
 if __name__ == "__main__":
     translate_video("bf2c632e-6641-4ff7-a905-7f8d9a64ea80")
