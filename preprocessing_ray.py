@@ -156,7 +156,7 @@ def preprocessing(filename):
     # ray_results = [preprocessing_video.remote(video, mean,std) for video in video_list]
     # ray.get(ray_results)
     # ray.shutdown()
-    
+    torch.backends.cudnn.enabled = False 
     video_name = filename + '.webm'
     mean_std_results = mean_std(video_name)
     mean, std = mean_std_results
