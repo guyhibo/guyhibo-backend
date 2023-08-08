@@ -5,3 +5,5 @@ key.pem
 .DS_store
 *.webm
 dataset
+data
+ckpt
